@@ -1,15 +1,15 @@
 choices = {'r' => 'Rock', 'p' => 'Paper', 's' => 'Scissors' }
-WINNING_SCENARIOS = {['r','s'] => 'r', ['s', 'p'] => 's', ['r', 'p'] => 'p'}
+WINNING_SCENARIOS = {'r' => ['r','s'], 'p' => ['r', 'p'], 's' => ['s', 'p']}
 player = {'wins' => 0}
 computer = {'wins' => 0}
 
 def winner?(game)
-  WINNING_SCENARIOS.each {|k,v| k.sort! }
-  WINNING_SCENARIOS.keys.include?(game.sort!)
+  WINNING_SCENARIOS.each {|choice,scenario| scenario.sort! }
+  WINNING_SCENARIOS.values.include?(game.sort!)
 end
 
 def winner_name(player, computer ,game)
-  if player['pick'] == WINNING_SCENARIOS[game]
+  if player['pick'] == WINNING_SCENARIOS.key(game)
     player['wins'] += 1
     'Player'
   else
