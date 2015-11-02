@@ -1,29 +1,34 @@
 WINNING_LINES = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7]]
-PLACEHOLDER = '-' #to use for empty squares
+EMPTY_SQUARE = '-' #to use for empty squares
 
 # helper methods
 def initalize_squares
   b = {}
-  (1..9).each { |square| b[square] = PLACEHOLDER }
+  (1..9).each { |square| b[square] = EMPTY_SQUARE }
   b
 end
 
 def free_squares(s)
-  s.select { |_, v| v == PLACEHOLDER }.keys
+  s.select { |_, v| v == EMPTY_SQUARE }.keys
 end
 
-def defend_line(s)
+def two_in_a_row(s, mrkr)
   WINNING_LINES.each do |line|
     currend_line = s.values_at(*line)
-    if (currend_line.count('x') == 2) && (currend_line.count(PLACEHOLDER) == 1)
+    if (currend_line.count(mrkr) == 2) && (currend_line.count(EMPTY_SQUARE) == 1)
       return line
     end
   end
-  false
+  nil
 end
 
 def smart_pick(s, line)
-  line.each { |k| s[k] = 'o' if s[k] == '-' }
+  line.each { |square| s[square] = 'o' if s[square] == EMPTY_SQUARE }
+end
+
+def random_pick(s)
+  pick = free_squares(s).sample
+  s[pick] = 'o'
 end
 
 def winner(s)
@@ -50,7 +55,7 @@ def player_picks_square(s)
   begin
     pick = gets.chomp.to_i
     unless free_squares(s).include?(pick)
-      puts "Have you chosen a square from the list? try again"
+      puts "#{pick} is not empty? please try again"
     end
   end until free_squares(s).include?(pick)
   s[pick] = 'x'
@@ -61,11 +66,14 @@ def game_over?(s)
 end
 
 def computer_picks_square(s)
-  if defend_line(s)
-    smart_pick(s, defend_line(s))
+  computer = two_in_a_row(s, 'o')
+  player = two_in_a_row(s, 'x')
+  if computer
+    smart_pick(s, computer)
+  elsif player
+    smart_pick(s, player)
   else
-    pick = free_squares(s).sample
-    s[pick] = 'o'
+    random_pick(s)
   end
 end
 
@@ -95,4 +103,3 @@ loop do
 end
 
 puts 'Thanks for playing.'
-
